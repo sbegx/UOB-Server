@@ -1,3 +1,3 @@
 # UOB-Server
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://raw.githubusercontent.com/sbegx/UOB-Server/main/azureDeployServer.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsbegx%2FUOB-Server%2Fmain%2FazureDeployServer.json)
