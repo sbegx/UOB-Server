@@ -1,0 +1,651 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerGroupName": {
+      "type": "string",
+      "defaultValue": "ServerContainerGroup",
+      "metadata": {
+        "description": "Container Group name."
+      }
+    },
+	"location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "registry": {
+      "type": "string",
+	  "defaultValue": "shariquecontainerregistry01.azurecr.io",
+      "metadata": {
+        "description": "Name of the Registry."
+      }
+    },
+    "registryUsername": {
+      "type": "securestring",
+	  "defaultValue": "ShariqueContainerRegistry01",
+      "metadata": {
+        "description": "Username for the registry"
+      }
+    },
+    "registryPassword": {
+      "type": "securestring",
+	  "defaultValue": "1iyo5ANnLpqDVfrh7=4MSHy=f0q4uwQG",
+      "metadata": {
+        "description": "Password for the registry"
+      }
+    },
+    "vaultToken": {
+      "type": "securestring",
+	  "defaultValue": "200",
+      "metadata": {
+        "description": "Specifies the root token to use for Vault in DEV mode"
+      }
+    },
+    "rpsImageName": {
+      "defaultValue": "oact-rps:latest",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the RPS image to deploy from specified registry"
+      }
+    },
+    "mpsImageName": {
+      "defaultValue": "oact-mps:latest",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the MPS image to deploy from specified registry"
+      }
+    },
+    "sampleWebUIImageName": {
+      "defaultValue": "oact-webui:latest",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Sample WebUI image to deploy from specified registry"
+      }
+    },
+    "fqdn": {
+      "type": "string",
+	  "defaultValue": "Sharique",
+      "metadata": {
+        "description": "Name of the FQDN you wish to use to access this deployment (i.e. \"sample\" will result in an FQDN of sample.westus.azurecontainer.io)"
+      }
+    },
+    "dbAdminUsername": {
+      "type": "securestring",
+      "defaultValue": "postgresadmin",
+      "metadata": {
+        "description": "For details on this property view the configuration documentation located under \"Microservices\" in the Open AMT Cloud Toolkit documentation on https://open-amt-cloud-toolkit.github.io/docs/"
+      }
+    },
+    "dbAdminPassword": {
+      "type": "securestring",
+      "defaultValue": "admin123",
+      "metadata": {
+        "description": "For details on this property view the configuration documentation located under \"Microservices\" in the Open AMT Cloud Toolkit documentation on https://open-amt-cloud-toolkit.github.io/docs/"
+      }
+    },
+    "mpsAdminUsername": {
+      "type": "securestring",
+	  "defaultValue": "Sharique",
+      "metadata": {
+        "description": "For details on this property view the configuration documentation located under \"Microservices\" in the Open AMT Cloud Toolkit documentation on https://open-amt-cloud-toolkit.github.io/docs/"
+      }
+    },
+    "mpsAdminPassword": {
+      "type": "securestring",
+	  "defaultValue": "Passw0rd*",
+      "metadata": {
+        "description": "For details on this property view the configuration documentation located under \"Microservices\" in the Open AMT Cloud Toolkit documentation on https://open-amt-cloud-toolkit.github.io/docs/"
+      }
+    },
+	"mpsAdminAddress": {
+      "type": "string",
+	  "defaultValue": "20.163.194.101",
+      "metadata": {
+        "description": "development system's IP Address"
+      }
+    },
+    "tokenExpiration": {
+      "defaultValue": "1440",
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the duration (in minutes) that a token will be valid for"
+      }
+    },
+	"ciraConfigImageName": {
+      "defaultValue": "cira:latest",
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Cira image to deploy from specified registry"
+      }
+    },
+	"ciraConfigName": {
+      "defaultValue": "myCIRAConfig",
+      "type": "securestring",
+      "metadata": {
+        "description": "Config name of your choice"
+      }
+    },
+	"amtModeProfileName": {
+      "defaultValue": "ccmprofile",
+      "type": "securestring",
+      "metadata": {
+        "description": "CCM profile name of your choice"
+      }
+    },
+	"profileAmtPassword": {
+      "defaultValue": "Passw0rd*",
+      "type": "securestring",
+      "metadata": {
+        "description": "A strong AMT Password of your choice. AMT will verify this password when receiving a command from a MPS server. This password is also required for device deactivation."
+      }
+    },
+	"hostIP": {
+      "defaultValue": "20.163.194.101",
+      "type": "securestring",
+      "metadata": {
+        "description": "Host/ development system's IP Address"
+      }
+    },
+	"eventHubName": {
+      "defaultValue": "sharique0822eventhub",
+      "type": "string",
+      "metadata": {
+        "description": "Event hub name that you have created for event grid system topic in Azure Prerequisites section"
+      }
+    },
+	"eventHubConnectionString": {
+      "defaultValue": "Endpoint=sb://sharique0822.servicebus.windows.net/;SharedAccessKeyName=SAS;SharedAccessKey=R4lqU0IFO0LMjFIobChf/EaZsrQWpDuUb/Nzc3ghhZ4=;EntityPath=sharique0822eventhub",
+      "type": "securestring",
+      "metadata": {
+        "description": "Navigate to the event hub that you have created for event grid system topic in Azure Prerequisites section and click on Shared access policies under the event hubs instance portal and use the event hub’s primary connection string."
+      }
+    },
+	"iotHubServiceConnectionString": {
+      "defaultValue": "HostName=ShariqueIOTHub.azure-devices.net;SharedAccessKeyName=service;SharedAccessKey=gyvZvCineRdSYgrmYvWk9obGFfnpGqmg+P4py0lo8jE=",
+      "type": "securestring",
+      "metadata": {
+        "description": "Navigate to the hub portal, click on Shared access policies, select service policy and use the service policy connection string."
+      }
+    },
+	"customTopicEventgridEndpoint": {
+      "defaultValue":  "https://sharique0822eventgridtopic.eastus-1.eventgrid.azure.net/api/events",
+      "type": "securestring",
+      "metadata": {
+        "description": "Navigate to the Event Grid Topic(custom) portal that was created, use the Topic Endpoint for custom_topic_eventgrid_endpoint."
+      }
+    },
+	"customTopicEventgridKey": {
+      "defaultValue": "EjrU8ZBR1O2Dn9grzv2qvfuyBEvFl/5bdLP1B77fLuQ=",
+      "type": "string",
+      "metadata": {
+        "description": "Navigate to the Event Grid Topic(custom) portal that was created, click on Access Keys, use the Key1 as custom_topic_eventgrid_key."
+      }
+    },
+	"enableAutomaticPowerAction": {
+      "defaultValue": true,
+      "type": "bool",
+      "metadata": {
+        "description": "To enable automatic mode, set the value to true, else false."
+      }
+    },
+	"enableSsl": {
+      "defaultValue": "no",
+      "type": "string",
+      "metadata": {
+        "description": "Set the value as yes/no. By default it's no"
+      },
+      "allowedValues": [
+        "no",
+        "yes"
+      ]
+    },
+    "sslCertPath":{
+      "type": "string",
+      "defaultValue": "[if(equals(parameters('enableSsl'), 'yes'), 'Enter_SSL_Cert_Path_Here', '')]",
+      "metadata": {
+        "description": "Required only if SSL is enabled. Copy the certificate into UOB App container and provide the SSL certificate path.  You will need to add the environment variable in container 8 as SSL_CERT_PATH"
+      }
+    }
+  },
+  "variables": {
+	  "container1name": "rps",
+	  "container1image": "[concat(parameters('registry'), '/', parameters('rpsImageName'))]",
+	  "container2name": "mps",
+	  "container2image": "[concat(parameters('registry'), '/', parameters('mpsImageName'))]",
+	  "container3name": "webui",
+	  "container3image": "[concat(parameters('registry'), '/', parameters('sampleWebUIImageName'))]",
+	  "container4name": "vault",
+	  "container4image": "vault:latest",
+	  "container5name": "kong",
+	  "container5image": "kong:2.3",
+	  "container6name": "db",
+	  "container6image": "postgres:latest",
+	  "container7name": "cira-config",
+	  "container7image": "[concat(parameters('registry'), '/', parameters('ciraConfigImageName'))]",
+	  "container8name": "uob-server",
+	  "container8image": "intel/user-oob-server-app-for-azure:latest"
+  },
+  "resources": [
+    {
+      "name": "[parameters('containerGroupName')]",
+      "type": "Microsoft.ContainerInstance/containerGroups",
+      "apiVersion": "2019-12-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "containers": [
+		  {
+            "name": "[variables('container1name')]",
+            "properties": {
+              "image": "[variables('container1image')]",
+              "ports": [
+                {
+                  "port": 8080
+                },
+                {
+                  "port": 8081
+                }
+              ],
+              "environmentVariables": [
+                {
+                  "name": "RPS_VAULT_TOKEN",
+                  "value": "[parameters('vaultToken')]"
+                },
+                {
+                  "name": "RPS_CONNECTION_STRING",
+                  "value": "[concat('postgresql://',parameters('dbAdminUsername'),':',parameters('dbAdminPassword'),'@localhost:5432/rpsdb')]"
+				}
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 0.5,
+                  "memoryInGb": 1
+                }
+              }
+            }
+          },
+          {
+            "name": "[variables('container2name')]",
+            "properties": {
+              "image": "[variables('container2image')]",
+              "environmentVariables": [
+                {
+                    "name": "MPS_COMMON_NAME",
+                    "value": "[concat(parameters('fqdn'), '.', parameters('location'),'.azurecontainer.io')]"
+                },
+                {
+                    "name": "MPS_WEB_ADMIN_USER",
+                    "value": "[parameters('mpsAdminUsername')]"
+                },
+                {
+                    "name": "MPS_WEB_ADMIN_PASSWORD",
+                    "value": "[parameters('mpsAdminPassword')]"
+                },
+                {
+                    "name": "MPS_JWT_EXPIRATION",
+                    "value": "[parameters('tokenExpiration')]"
+                },
+                {
+                    "name": "MPS_JWT_SECRET",
+                    "value": "supersecret"
+                },
+                {
+                    "name": "MPS_VAULT_TOKEN",
+                    "value": "[parameters('vaultToken')]"
+                },
+                {
+                    "name": "MPS_CONNECTION_STRING",
+                    "value": "[concat('postgresql://',parameters('dbAdminUsername'),':',parameters('dbAdminPassword'),'@localhost:5432/mpsdb')]"
+                }
+            ],
+              "ports": [
+                {
+                  "port": 4433
+                },
+                {
+                  "port": 3000
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 0.5,
+                  "memoryInGb": 1
+                }
+              }
+            }
+          },
+          {
+            "name": "[variables('container3name')]",
+            "properties": {
+              "image": "[variables('container3image')]",
+			  "environmentVariables": [
+                {
+                  "name": "MPS_SERVER",
+                  "value": "[concat('https://',parameters('fqdn'), '.', parameters('location'), '.azurecontainer.io:8443/mps')]"
+                },
+                {
+                  "name": "RPS_SERVER",
+                  "value": "[concat('https://',parameters('fqdn'), '.', parameters('location'), '.azurecontainer.io:8443/rps')]"
+                }
+              ],
+              "ports": [
+                {
+                  "port": 80
+                }
+              ],
+			  "volumeMounts": [
+                {
+                  "name": "nginx-config",
+                  "mountPath": "/etc/nginx/conf.d"
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 0.5,
+                  "memoryInGb": 1
+                }
+              }
+            }
+          },
+          {
+            "name": "[variables('container4name')]",
+            "properties": {
+              "image": "[variables('container4image')]",
+              "environmentVariables": [
+                {
+                  "name": "VAULT_DEV_ROOT_TOKEN_ID",
+                  "value": "[parameters('vaultToken')]"
+                },
+                {
+                  "name": "VAULT_DEV_LISTEN_ADDRESS",
+                  "value": "0.0.0.0:8200"
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 0.5,
+                  "memoryInGb": 0.1
+                }
+              }
+            }
+          },
+          {
+            "name": "[variables('container5name')]",
+            "properties": {
+              "image": "[variables('container5image')]",
+              "ports": [
+                {
+                  "port": 8443
+                }
+              ],
+              "command": [
+                "kong",
+                "start",
+                "--vv"
+              ],
+              "environmentVariables": [
+                {
+                  "name": "KONG_DATABASE",
+                  "value": "off"
+                },
+                {
+                  "name": "KONG_CASSANDRA_CONTACT_POINTS",
+                  "value": "kong-database"
+                },
+                {
+                  "name": "KONG_ADMIN_LISTEN",
+                  "value": "0.0.0.0:8001"
+                },
+                {
+                  "name": "KONG_ADMIN_LISTEN_SSL",
+                  "value": "0.0.0.0:8444"
+                },
+                {
+                  "name": "KONG_NGINX_DAEMON",
+                  "value": "off"
+                },
+                {
+                  "name": "KONG_DECLARATIVE_CONFIG",
+                  "value": "/home/kong/kong.yaml"
+                },
+                {
+                  "name": "KONG_LOG_LEVEL",
+                  "value": "debug"
+                }
+              ],
+              "volumeMounts": [
+                {
+                  "name": "kong-config",
+                  "mountPath": "/home/kong/"
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 0.5,
+                  "memoryInGb": 1
+                }
+              }
+            }
+          },
+          {
+            "name": "[variables('container6name')]",
+            "properties": {
+              "image": "[variables('container6image')]",
+              "ports": [
+                {
+                  "port": 5432
+                }
+              ],
+              "environmentVariables": [
+                {
+                  "name": "POSTGRES_DB",
+                  "value": "rpsdb"
+                },
+                {
+                  "name": "POSTGRES_USER",
+                  "value": "postgresadmin"
+                },
+                {
+                  "name": "POSTGRES_PASSWORD",
+                  "value": "admin123"
+                }
+              ],
+              "volumeMounts": [
+                {
+                  "name": "db-config",
+                  "mountPath": "/docker-entrypoint-initdb.d"
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 0.3,
+                  "memoryInGb": 0.4
+                }
+              }
+            }
+          },
+          {
+			  "name": "[variables('container7name')]",
+			  "properties": {
+              "image": "[variables('container7image')]",
+              "environmentVariables": [
+                
+                {
+                   "name": "server_address",
+                   "value": "[concat('https:/', '/', parameters('fqdn'), '.', parameters('location'), '.azurecontainer.io:8443')]"
+                },
+                {
+                  "name": "login_username",
+                  "value": "[parameters('mpsAdminUsername')]"
+                },
+                {
+                  "name":"login_password",
+                  "value" : "[parameters('mpsAdminPassword')]"
+                },
+                {
+                  "name":"mps_server_address",
+                  "value": "[parameters('mpsAdminAddress')]"
+                },
+                {
+                  "name":"config_name",
+                  "value": "[parameters('ciraConfigName')]"
+                },
+                {
+                  "name": "profile_name",
+                  "value": "[parameters('amtModeProfileName')]"
+                },
+                {
+                  "name":"amt_password",
+                  "value" : "[parameters('profileAmtPassword')]"
+                }
+            ],
+              "resources": {
+                "requests": {
+                  "cpu": 0.5,
+                  "memoryInGb": 1
+                }
+              }
+            }
+		      },
+          {
+            "name": "[variables('container8name')]",
+			
+            "properties": {
+              "image": "[variables('container8image')]",
+              "ports": [
+                {
+                  "port": 53
+                }
+              ],
+              "environmentVariables": [
+                
+                  {
+                     "name": "HOST_IP",
+                     "value": "[parameters('hostIP')]"
+                  },
+                  {
+                    "name": "MPS_SERVER_ADDRESS",
+                    "value": "[concat(parameters('fqdn'), '.', parameters('location'), '.azurecontainer.io:8443')]"
+                  },
+                  {
+                    "name":"MPS_WEB_ADMIN_USER",
+                    "value" : "[parameters('mpsAdminUsername')]"
+                  },
+                  {
+                    "name":"MPS_WEB_ADMIN_PASSWORD",
+                    "value": "[parameters('mpsAdminPassword')]"
+                  },
+                  {
+                    "name":"EVENTHUB_CONNECTION_STRING",
+                    "value": "[parameters('eventHubConnectionString')]"
+                  },
+                  {
+                    "name": "EVENTHUB_NAME",
+                    "value": "[parameters('eventHubName')]"
+                  },
+                  {
+                    "name":"IOTHUB_SERVICE_CONNECTION_STRING",
+                    "value" : "[parameters('iotHubServiceConnectionString')]"
+                  },
+                  {
+                    "name":"AMT_MODE_PROFILE_NAME",
+                    "value":"[parameters('amtModeProfileName')]"
+                  },
+                  {
+                    "name": "CUSTOM_TOPIC_EVENTGRID_KEY",
+                    "value": "[parameters('customTopicEventgridKey')]"
+                  },
+                  {
+                    "name":"CUSTOM_TOPIC_EVENTGRID_ENDPOINT",
+                    "value" : "[parameters('customTopicEventgridEndpoint')]"
+                  },
+                  {
+                    "name": "ENABLE_AUTOMATIC_POWER_ACTION",
+                    "value": "[parameters('enableAutomaticPowerAction')]"
+                  },
+                  {
+                    "name":"ENABLE_SSL",
+                    "value": "[parameters('enableSsl')]"
+                  }
+				  //{
+				  //"name": "SSL_CERT_PATH",
+                  //  "value": "[parameters('sslCertPath)]"
+                  //}
+                  
+              ],
+              "volumeMounts": [
+                {
+                  "name": "manageability",
+                  "mountPath": "/opt/manageability"
+                }
+              ],
+              "resources": {
+                "requests": {
+                  "cpu": 0.5,
+                  "memoryInGb": 1
+                }
+              }
+            }
+          }
+		      
+		],
+
+        "osType": "Linux",
+		// "restartPolicy": "OnFailure",
+		"ipAddress": {
+          "type": "Public",
+		  "dnsNameLabel": "[parameters('fqdn')]",
+          "ip": "20.163.194.101",
+          "ports": [
+            {
+              "protocol": "tcp",
+              "port": 4433
+            },
+            {
+              "protocol": "tcp",
+              "port": 8443
+            },
+			      {
+                  "protocol": "tcp",
+                  "port": 53
+             }
+            ]
+        },
+        "imageRegistryCredentials": [
+        {
+            "server": "[parameters('registry')]",
+            "username": "[parameters('registryUsername')]",
+            "password": "[parameters('registryPassword')]"
+          }
+      ],
+        "volumes": [
+		  {
+            "name": "private",
+            "emptyDir": {}
+          },
+          {
+            "name": "kong-config",
+            "secret": {
+              "kong.yaml": "IyBDb3B5cmlnaHQgKGMpIEludGVsIENvcnBvcmF0aW9uIDIwMTgtMjAxOQ0KIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogQXBhY2hlLTIuMA0KDQpfZm9ybWF0X3ZlcnNpb246ICIyLjEiDQpfdHJhbnNmb3JtOiB0cnVlDQoNCnNlcnZpY2VzOg0KLSBuYW1lOiBtcHMtcmVzdA0KICBob3N0OiAxMjcuMC4wLjENCiAgcG9ydDogMzAwMA0KICB0YWdzOg0KICAtIG1wcw0KICByb3V0ZXM6DQogIC0gbmFtZTogbXBzLXJvdXRlDQogICAgc3RyaXBfcGF0aDogdHJ1ZQ0KICAgIHBhdGhzOg0KICAgIC0gL21wcw0KDQotIG5hbWU6IG1wcy1yZXN0LXYyDQogIGhvc3Q6IDEyNy4wLjAuMQ0KICBwb3J0OiAzMDAwDQogIHBhdGg6IC9hcGkvdjEvYXV0aG9yaXplDQogIHRhZ3M6DQogIC0gbXBzDQogIHJvdXRlczoNCiAgLSBuYW1lOiBtcHMtbG9naW4tcm91dGUNCiAgICBzdHJpcF9wYXRoOiB0cnVlDQogICAgcGF0aHM6DQogICAgLSAvbXBzL2xvZ2luL2FwaS92MS9hdXRob3JpemUNCg0KLSBuYW1lOiBtcHMtcmVkaXJlY3Rpb24NCiAgaG9zdDogMTI3LjAuMC4xDQogIHBvcnQ6IDMwMDANCiAgcGF0aDogL3JlbGF5DQogIHRhZ3M6DQogIC0gbXBzDQogIHJvdXRlczoNCiAgLSBuYW1lOiBtcHMtcmVkaXJlY3Rpb24tcm91dGUNCiAgICBzdHJpcF9wYXRoOiB0cnVlDQogICAgcGF0aHM6DQogICAgLSAvbXBzL3dzL3JlbGF5DQoNCi0gbmFtZTogcnBzLXJlc3QNCiAgaG9zdDogMTI3LjAuMC4xDQogIHBvcnQ6IDgwODEgIA0KICB0YWdzOg0KICAtIHJwcw0KICByb3V0ZXM6DQogIC0gbmFtZTogcnBzLXJvdXRlDQogICAgc3RyaXBfcGF0aDogdHJ1ZQ0KICAgIHBhdGhzOg0KICAgIC0gL3Jwcw0KDQotIG5hbWU6IHJwcy13cw0KICBob3N0OiAxMjcuMC4wLjENCiAgcG9ydDogODA4MA0KICB0YWdzOg0KICAtIHJwcw0KICByb3V0ZXM6DQogIC0gbmFtZTogcnBzLWFjdGl2YXRlLXJvdXRlDQogICAgc3RyaXBfcGF0aDogdHJ1ZQ0KICAgIHBhdGhzOg0KICAgIC0gL2FjdGl2YXRlDQoNCi0gbmFtZTogdmF1bHQtYXBpDQogIGhvc3Q6IDEyNy4wLjAuMQ0KICBwb3J0OiA4MjAwIA0KICB0YWdzOg0KICAtIHZhdWx0DQogIHJvdXRlczoNCiAgLSBuYW1lOiB2YXVsdC1yb3V0ZQ0KICAgIHN0cmlwX3BhdGg6IHRydWUNCiAgICBwYXRoczoNCiAgICAtIC92YXVsdA0KDQotIG5hbWU6IG1vc3F1aXR0by13cw0KICBob3N0OiAxMjcuMC4wLjENCiAgcG9ydDogOTAwMQ0KICB0YWdzOg0KICAtIG1vc3F1aXR0bw0KICByb3V0ZXM6DQogIC0gbmFtZTogbW9zcXVpdHRvLXJvdXRlDQogICAgc3RyaXBfcGF0aDogdHJ1ZQ0KICAgIHBhdGhzOg0KICAgIC0gL21vc3F1aXR0bw0KDQotIG5hbWU6IHdlYg0KICBob3N0OiAxMjcuMC4wLjENCiAgcG9ydDogODANCiAgdGFnczoNCiAgLSB3ZWINCiAgcm91dGVzOg0KICAtIG5hbWU6IHdlYi1yb3V0ZQ0KICAgIHBhdGhzOg0KICAgIC0gLw0KDQpwbHVnaW5zOg0KLSBuYW1lOiBjb3JzIA0KLSBuYW1lOiBqd3QNCiAgcm91dGU6IHJwcy1yb3V0ZQ0KICBjb25maWc6DQogICAgY2xhaW1zX3RvX3ZlcmlmeToNCiAgICAtIGV4cA0KLSBuYW1lOiBqd3QNCiAgcm91dGU6IG1wcy1yb3V0ZQ0KICBjb25maWc6DQogICAgY2xhaW1zX3RvX3ZlcmlmeToNCiAgICAtIGV4cA0KDQpjb25zdW1lcnM6DQogIC0gdXNlcm5hbWU6IGFkbWluDQpqd3Rfc2VjcmV0czoNCiAgLSBjb25zdW1lcjogYWRtaW4NCiAgICBrZXk6IDlFbVJKVGJJaUliNGJJZVNzbWdjV0lqclI2SHlFVHFjICNzYW1wbGUga2V5DQogICAgc2VjcmV0OiAic3VwZXJzZWNyZXQiDQo="
+            }
+          },
+          {
+            "name": "db-config",
+            "secret": {
+              "init.sql": "Q1JFQVRFIEVYVEVOU0lPTiBJRiBOT1QgRVhJU1RTIGNpdGV4dDsNCkNSRUFURSBVU0VSIHJwc2RiOw0KQ1JFQVRFIFRBQkxFIElGIE5PVCBFWElTVFMgY2lyYWNvbmZpZ3MoDQogIGNpcmFfY29uZmlnX25hbWUgY2l0ZXh0IE5PVCBOVUxMLA0KICBtcHNfc2VydmVyX2FkZHJlc3MgdmFyY2hhcigyNTYpLA0KICBtcHNfcG9ydCBpbnRlZ2VyLA0KICB1c2VyX25hbWUgdmFyY2hhcig0MCksDQogIHBhc3N3b3JkIHZhcmNoYXIoNjMpLA0KICBjb21tb25fbmFtZSB2YXJjaGFyKDI1NiksDQogIHNlcnZlcl9hZGRyZXNzX2Zvcm1hdCBpbnRlZ2VyLCANCiAgYXV0aF9tZXRob2QgaW50ZWdlciwgDQogIG1wc19yb290X2NlcnRpZmljYXRlIHRleHQsIA0KICBwcm94eWRldGFpbHMgdGV4dCwNCiAgdGVuYW50X2lkIHZhcmNoYXIoMzYpIE5PVCBOVUxMLA0KICBQUklNQVJZIEtFWSAoY2lyYV9jb25maWdfbmFtZSwgdGVuYW50X2lkKQ0KKTsNCkNSRUFURSBUQUJMRSBJRiBOT1QgRVhJU1RTIHdpcmVsZXNzY29uZmlncygNCiAgd2lyZWxlc3NfcHJvZmlsZV9uYW1lIGNpdGV4dCBOT1QgTlVMTCwNCiAgYXV0aGVudGljYXRpb25fbWV0aG9kIGludGVnZXIsDQogIGVuY3J5cHRpb25fbWV0aG9kIGludGVnZXIsDQogIHNzaWQgdmFyY2hhcigzMiksDQogIHBza192YWx1ZSBpbnRlZ2VyLA0KICBwc2tfcGFzc3BocmFzZSB2YXJjaGFyKDYzKSwNCiAgbGlua19wb2xpY3kgaW50W10sDQogIGNyZWF0aW9uX2RhdGUgdGltZXN0YW1wLA0KICBjcmVhdGVkX2J5IHZhcmNoYXIoNDApLA0KICB0ZW5hbnRfaWQgdmFyY2hhcigzNikgTk9UIE5VTEwsDQogIFBSSU1BUlkgS0VZICh3aXJlbGVzc19wcm9maWxlX25hbWUsIHRlbmFudF9pZCkNCik7DQpDUkVBVEUgVEFCTEUgSUYgTk9UIEVYSVNUUyBwcm9maWxlcygNCiAgcHJvZmlsZV9uYW1lIGNpdGV4dCBOT1QgTlVMTCwNCiAgYWN0aXZhdGlvbiB2YXJjaGFyKDIwKSBOT1QgTlVMTCwNCiAgYW10X3Bhc3N3b3JkIHZhcmNoYXIoNDApLA0KICBnZW5lcmF0ZV9yYW5kb21fcGFzc3dvcmQgQk9PTEVBTiBOT1QgTlVMTCwNCiAgY2lyYV9jb25maWdfbmFtZSBjaXRleHQsDQogIEZPUkVJR04gS0VZIChjaXJhX2NvbmZpZ19uYW1lLHRlbmFudF9pZCkgIFJFRkVSRU5DRVMgY2lyYWNvbmZpZ3MoY2lyYV9jb25maWdfbmFtZSx0ZW5hbnRfaWQpLA0KICBjcmVhdGlvbl9kYXRlIHRpbWVzdGFtcCwNCiAgY3JlYXRlZF9ieSB2YXJjaGFyKDQwKSwNCiAgbWVieF9wYXNzd29yZCB2YXJjaGFyKDQwKSwNCiAgZ2VuZXJhdGVfcmFuZG9tX21lYnhfcGFzc3dvcmQgQk9PTEVBTiBOT1QgTlVMTCwNCiAgdGFncyB0ZXh0W10sDQogIGRoY3BfZW5hYmxlZCBCT09MRUFOLA0KICB0ZW5hbnRfaWQgdmFyY2hhcigzNikgTk9UIE5VTEwsDQogIHRsc19tb2RlIGludGVnZXIgTlVMTCwNCiAgdXNlcl9jb25zZW50IHZhcmNoYXIoNykgTlVMTCwNCiAgaWRlcl9lbmFibGVkIEJPT0xFQU4gTlVMTCwNCiAga3ZtX2VuYWJsZWQgQk9PTEVBTiBOVUxMLA0KICBzb2xfZW5hYmxlZCBCT09MRUFOIE5VTEwsDQogIFBSSU1BUlkgS0VZIChwcm9maWxlX25hbWUsIHRlbmFudF9pZCkNCik7DQpDUkVBVEUgVEFCTEUgSUYgTk9UIEVYSVNUUyBwcm9maWxlc193aXJlbGVzc2NvbmZpZ3MoDQogIHdpcmVsZXNzX3Byb2ZpbGVfbmFtZSBjaXRleHQsDQogIHByb2ZpbGVfbmFtZSBjaXRleHQsDQogIEZPUkVJR04gS0VZICh3aXJlbGVzc19wcm9maWxlX25hbWUsdGVuYW50X2lkKSAgUkVGRVJFTkNFUyB3aXJlbGVzc2NvbmZpZ3Mod2lyZWxlc3NfcHJvZmlsZV9uYW1lLHRlbmFudF9pZCksDQogIEZPUkVJR04gS0VZIChwcm9maWxlX25hbWUsdGVuYW50X2lkKSAgUkVGRVJFTkNFUyBwcm9maWxlcyhwcm9maWxlX25hbWUsdGVuYW50X2lkKSwNCiAgcHJpb3JpdHkgaW50ZWdlciwNCiAgY3JlYXRpb25fZGF0ZSB0aW1lc3RhbXAsDQogIGNyZWF0ZWRfYnkgdmFyY2hhcig0MCksDQogIHRlbmFudF9pZCB2YXJjaGFyKDM2KSBOT1QgTlVMTCwNCiAgUFJJTUFSWSBLRVkgKHdpcmVsZXNzX3Byb2ZpbGVfbmFtZSwgcHJvZmlsZV9uYW1lLCBwcmlvcml0eSwgdGVuYW50X2lkKQ0KKTsNCkNSRUFURSBUQUJMRSBJRiBOT1QgRVhJU1RTIGRvbWFpbnMoDQogIG5hbWUgY2l0ZXh0IE5PVCBOVUxMLA0KICBkb21haW5fc3VmZml4IGNpdGV4dCBOT1QgTlVMTCwNCiAgcHJvdmlzaW9uaW5nX2NlcnQgdGV4dCwNCiAgcHJvdmlzaW9uaW5nX2NlcnRfc3RvcmFnZV9mb3JtYXQgdmFyY2hhcig0MCksDQogIHByb3Zpc2lvbmluZ19jZXJ0X2tleSB0ZXh0LA0KICBjcmVhdGlvbl9kYXRlIHRpbWVzdGFtcCwNCiAgY3JlYXRlZF9ieSB2YXJjaGFyKDQwKSwNCiAgdGVuYW50X2lkIHZhcmNoYXIoMzYpIE5PVCBOVUxMLA0KICBDT05TVFJBSU5UIGRvbWFpbnN1ZmZpeCBVTklRVUUoZG9tYWluX3N1ZmZpeCx0ZW5hbnRfaWQpLA0KICBQUklNQVJZIEtFWSAobmFtZSwgdGVuYW50X2lkKQ0KKTsNCg0KQ1JFQVRFIFVOSVFVRSBJTkRFWCBsb3dlcl9uYW1lX3N1ZmZpeF9pZHggT04gZG9tYWlucyAoKGxvd2VyKG5hbWUpKSwgKGxvd2VyKGRvbWFpbl9zdWZmaXgpKSk7DQoNCkNSRUFURSBEQVRBQkFTRSBtcHNkYjsNCg0KXGNvbm5lY3QgbXBzZGINCg0KQ1JFQVRFIFRBQkxFIElGIE5PVCBFWElTVFMgZGV2aWNlcygNCiAgICBndWlkIHV1aWQgTk9UIE5VTEwsDQogICAgdGFncyB0ZXh0W10sDQogICAgaG9zdG5hbWUgdmFyY2hhcigyNTYpLA0KICAgIG1wc2luc3RhbmNlIHRleHQsIA0KICAgIGNvbm5lY3Rpb25zdGF0dXMgYm9vbGVhbiwNCiAgICBtcHN1c2VybmFtZSB0ZXh0LA0KICAgIHRlbmFudGlkIHZhcmNoYXIoMzYpLA0KICAgIFBSSU1BUlkgS0VZIChndWlkLHRlbmFudGlkKQ0KKTsgDQo="
+            }
+          },
+          {
+            "name": "nginx-config",
+            "secret": {
+              "nginx.conf": "c2VydmVyIHsNCiAgICBsaXN0ZW4gODAgZGVmYXVsdF9zZXJ2ZXI7DQogICAgbGlzdGVuIFs6Ol06ODAgZGVmYXVsdF9zZXJ2ZXI7DQogICAgc2VydmVyX25hbWUgXzsNCiANCg0KICAgIGxvY2F0aW9uIC8gew0KICAgICAgICByb290ICAgL3Vzci9zaGFyZS9uZ2lueC9odG1sOw0KICAgICAgICBpbmRleCAgaW5kZXguaHRtbCBpbmRleC5odG07DQogICAgfQ0KDQogICAgZXJyb3JfcGFnZSAgNDA0ICAgICAgICAgICAgICAvaW5kZXguaHRtbDsNCg0KICAgICMgcmVkaXJlY3Qgc2VydmVyIGVycm9yIHBhZ2VzIHRvIHRoZSBzdGF0aWMgcGFnZSAvNTB4Lmh0bWwNCiAgICAjDQogICAgZXJyb3JfcGFnZSAgIDUwMCA1MDIgNTAzIDUwNCAgLzUweC5odG1sOw0KICAgIGxvY2F0aW9uID0gLzUweC5odG1sIHsNCiAgICAgICAgcm9vdCAgIC91c3Ivc2hhcmUvbmdpbngvaHRtbDsNCiAgICB9DQp9DQoNCg=="
+            }
+          },
+          {
+            "name": "manageability",
+            "emptyDir": {}
+          }
+        ]
+      }
+    }
+  ]
+}
