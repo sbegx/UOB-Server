@@ -15,27 +15,27 @@
     },
     "registry": {
       "type": "string",
-	  "defaultValue": "shariquecontainerregistry01.azurecr.io",
+	  "defaultValue": "",
       "metadata": {
         "description": "Name of the Registry."
       }
     },
     "registryUsername": {
       "type": "securestring",
-	  "defaultValue": "ShariqueContainerRegistry01",
+	  "defaultValue": "",
       "metadata": {
         "description": "Username for the registry"
       }
     },
     "registryPassword": {
-      "type": "securestring",
-	  "defaultValue": "1iyo5ANnLpqDVfrh7=4MSHy=f0q4uwQG",
+      "type": "string",
+	  "defaultValue": "",
       "metadata": {
         "description": "Password for the registry"
       }
     },
     "vaultToken": {
-      "type": "securestring",
+      "type": "string",
 	  "defaultValue": "200",
       "metadata": {
         "description": "Specifies the root token to use for Vault in DEV mode"
@@ -64,7 +64,7 @@
     },
     "fqdn": {
       "type": "string",
-	  "defaultValue": "Sharique",
+	  "defaultValue": "",
       "metadata": {
         "description": "Name of the FQDN you wish to use to access this deployment (i.e. \"sample\" will result in an FQDN of sample.westus.azurecontainer.io)"
       }
@@ -84,22 +84,22 @@
       }
     },
     "mpsAdminUsername": {
-      "type": "securestring",
-	  "defaultValue": "Sharique",
+      "type": "string",
+	  "defaultValue": "",
       "metadata": {
         "description": "For details on this property view the configuration documentation located under \"Microservices\" in the Open AMT Cloud Toolkit documentation on https://open-amt-cloud-toolkit.github.io/docs/"
       }
     },
     "mpsAdminPassword": {
-      "type": "securestring",
-	  "defaultValue": "Passw0rd*",
+      "type": "string",
+	  "defaultValue": "",
       "metadata": {
         "description": "For details on this property view the configuration documentation located under \"Microservices\" in the Open AMT Cloud Toolkit documentation on https://open-amt-cloud-toolkit.github.io/docs/"
       }
     },
 	"mpsAdminAddress": {
       "type": "string",
-	  "defaultValue": "20.163.194.101",
+	  "defaultValue": "",
       "metadata": {
         "description": "development system's IP Address"
       }
@@ -133,49 +133,49 @@
       }
     },
 	"profileAmtPassword": {
-      "defaultValue": "Passw0rd*",
-      "type": "securestring",
+      "defaultValue": "",
+      "type": "string",
       "metadata": {
         "description": "A strong AMT Password of your choice. AMT will verify this password when receiving a command from a MPS server. This password is also required for device deactivation."
       }
     },
 	"hostIP": {
-      "defaultValue": "20.163.194.101",
-      "type": "securestring",
+      "defaultValue": "",
+      "type": "string",
       "metadata": {
         "description": "Host/ development system's IP Address"
       }
     },
 	"eventHubName": {
-      "defaultValue": "sharique0822eventhub",
+      "defaultValue": "",
       "type": "string",
       "metadata": {
         "description": "Event hub name that you have created for event grid system topic in Azure Prerequisites section"
       }
     },
 	"eventHubConnectionString": {
-      "defaultValue": "Endpoint=sb://sharique0822.servicebus.windows.net/;SharedAccessKeyName=SAS;SharedAccessKey=R4lqU0IFO0LMjFIobChf/EaZsrQWpDuUb/Nzc3ghhZ4=;EntityPath=sharique0822eventhub",
-      "type": "securestring",
+      "defaultValue": "",
+      "type": "string",
       "metadata": {
         "description": "Navigate to the event hub that you have created for event grid system topic in Azure Prerequisites section and click on Shared access policies under the event hubs instance portal and use the event hub’s primary connection string."
       }
     },
 	"iotHubServiceConnectionString": {
-      "defaultValue": "HostName=ShariqueIOTHub.azure-devices.net;SharedAccessKeyName=service;SharedAccessKey=gyvZvCineRdSYgrmYvWk9obGFfnpGqmg+P4py0lo8jE=",
-      "type": "securestring",
+      "defaultValue": "",
+      "type": "string",
       "metadata": {
         "description": "Navigate to the hub portal, click on Shared access policies, select service policy and use the service policy connection string."
       }
     },
 	"customTopicEventgridEndpoint": {
-      "defaultValue":  "https://sharique0822eventgridtopic.eastus-1.eventgrid.azure.net/api/events",
-      "type": "securestring",
+      "defaultValue":  "",
+      "type": "string",
       "metadata": {
         "description": "Navigate to the Event Grid Topic(custom) portal that was created, use the Topic Endpoint for custom_topic_eventgrid_endpoint."
       }
     },
 	"customTopicEventgridKey": {
-      "defaultValue": "EjrU8ZBR1O2Dn9grzv2qvfuyBEvFl/5bdLP1B77fLuQ=",
+      "defaultValue": "",
       "type": "string",
       "metadata": {
         "description": "Navigate to the Event Grid Topic(custom) portal that was created, click on Access Keys, use the Key1 as custom_topic_eventgrid_key."
@@ -201,7 +201,7 @@
     },
     "sslCertPath":{
       "type": "string",
-      "defaultValue": "[if(equals(parameters('enableSsl'), 'yes'), 'Enter_SSL_Cert_Path_Here', '')]",
+      "defaultValue": "",
       "metadata": {
         "description": "Required only if SSL is enabled. Copy the certificate into UOB App container and provide the SSL certificate path.  You will need to add the environment variable in container 8 as SSL_CERT_PATH"
       }
